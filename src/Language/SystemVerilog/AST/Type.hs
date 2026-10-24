@@ -129,8 +129,8 @@ packedArrayOf :: [Range] -> Type -> Type
 packedArrayOf [] t = t
 packedArrayOf rs1 t =
     case t' of
-        IntegerVector kw Signed rs | length rs == length rs1 + 1 ->
-            IntegerVector kw SignedElements rs
+        IntegerVector kw Signed rs ->
+            IntegerVector kw (SignedElements $ length rs2) rs
         _ -> t'
     where
         (tf, rs2) = typeRanges t
@@ -158,12 +158,12 @@ data Signing
     = Unspecified
     | Signed
     | Unsigned
-    | SignedElements -- used internally for packed arrays of signed elements
+    | SignedElements Int -- internal; the elements' number of packed dimensions
     deriving Eq
 
 instance Show Signing where
     show Unspecified = ""
-    show SignedElements = ""
+    show SignedElements{} = ""
     show Signed = "signed"
     show Unsigned = "unsigned"
 

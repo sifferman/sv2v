@@ -16,6 +16,8 @@ module top;
     localparam [7:0] P = -1;
     reg [15:0] w = 0;
     reg signed [3:0] g = -1;
+    reg [3:0] m = -1;
+    reg signed n = -1;
     wire [7:0] p;
     wire [7:0] v;
     sink #($signed(P[3:0])) s(p[3:0], v);
@@ -27,9 +29,9 @@ module top;
         set(a[7:4], $signed(c[3:0]));
         w[7:0] = $signed(w[7:0]) + $signed(a[3:0]);
         #1;
-        $display("%0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d",
+        $display("%0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d",
             $signed(a[3:0]), $signed(a[7:4]), a, $signed(b[11:8]), b[15:8],
-            c[3:0], d[11:8], $signed(e[3:0]), $signed(f[3:0]),
-            $signed(P[3:0]), $signed(w[7:0]), g, v);
+            c[3:0], d[11:8], $signed(d[15:8]), $signed(e[3:0]), $signed(f[3:0]),
+            $signed(P[3:0]), $signed(w[7:0]), g, v, $signed(m[0]), m, n);
     end
 endmodule
