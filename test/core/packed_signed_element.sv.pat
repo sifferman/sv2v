@@ -1,1 +1,1 @@
-affirm $signed(c[0+:4])
+affirm $signed(signed_vector[0+:4])

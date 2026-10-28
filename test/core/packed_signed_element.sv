@@ -1,38 +1,51 @@
-module sink #(parameter integer V = 0) (
-    output logic signed [3:0] x,
-    output logic [7:0] y
+module driver #(parameter integer VALUE = 0) (
+    output logic signed [3:0] signed_output,
+    output logic [7:0] parameter_output
 );
-    assign x = -1;
-    assign y = V;
+    assign signed_output = -1;
+    assign parameter_output = VALUE;
 endmodule
 
 module top;
-    typedef logic signed [3:0] elem_t;
-    typedef logic signed [7:0] wide_t;
-    typedef logic signed [1:0][3:0] pair_t;
-    typedef elem_t unpacked_t [2];
-    elem_t [1:0] a;
-    elem_t [1:0][1:0] b = '1;
-    logic signed [1:0][3:0] c = '1;
-    pair_t [1:0] d = '1;
-    struct packed signed { logic [3:0] f; } [1:0] e = '1;
-    logic signed [3:0] f [2] = '{-1, -1};
-    localparam unpacked_t P = '{-1, -1};
-    wide_t [1:0] w = '0;
-    var type(a[0]) g = -1;
-    elem_t [1:0] p;
-    logic [7:0] v;
-    sink #(P[0]) s(p[0], v);
-    task automatic set(output elem_t o, input elem_t i);
-        o = i;
+    typedef logic signed [3:0] element_t;
+    typedef logic signed [7:0] wide_element_t;
+    typedef logic signed [1:0][3:0] two_dimensional_t;
+    typedef element_t unpacked_array_t [2];
+
+    element_t [1:0] array;
+    element_t [1:0][1:0] array_2d = '1;
+    two_dimensional_t [1:0] array_of_2d = '1;
+    logic signed [1:0][3:0] signed_vector = '1;
+    struct packed signed { logic [3:0] field; } [1:0] struct_array = '1;
+    logic signed [3:0] unpacked_array [2] = '{-1, -1};
+    localparam unpacked_array_t UNPACKED_PARAMETER = '{-1, -1};
+    wide_element_t [1:0] accumulator = '0;
+    var type(array[0]) type_of_element = -1;
+
+    element_t [1:0] port_connection;
+    logic [7:0] parameter_override;
+    driver #(UNPACKED_PARAMETER[0])
+        driver_instance(port_connection[0], parameter_override);
+
+    task automatic copy(output element_t destination, input element_t source);
+        destination = source;
     endtask
+
     initial begin
-        a[0] = -1;
-        set(a[1], $signed(c[0]));
-        w[0] += a[0];
+        array[0] = -1;
+        copy(array[1], $signed(signed_vector[0]));
+        accumulator[0] += array[0];
         #1;
-        $display("%0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d",
-            a[0], a[1], a, b[1][0], b[1], c[0], d[1][0], e[0], f[0], P[0],
-            w[0], g, v);
+        $display("array: %0d %0d %0d", array[0], array[1], array);
+        $display("array_2d: %0d %0d", array_2d[1][0], array_2d[1]);
+        $display("array_of_2d: %0d", array_of_2d[1][0]);
+        $display("signed_vector: %0d", signed_vector[0]);
+        $display("struct_array: %0d", struct_array[0]);
+        $display("unpacked_array: %0d", unpacked_array[0]);
+        $display("UNPACKED_PARAMETER: %0d", UNPACKED_PARAMETER[0]);
+        $display("accumulator: %0d", accumulator[0]);
+        $display("type_of_element: %0d", type_of_element);
+        $display("port_connection: %0d", port_connection[0]);
+        $display("parameter_override: %0d", parameter_override);
     end
 endmodule
