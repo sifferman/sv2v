@@ -85,7 +85,7 @@ flattenType t =
             Union  pk fields rs ->
                 (Union  pk fields', rs)
                 where fields' = flattenFields fields
-            IntegerVector kw SignedElements rs@[_, _] ->
+            IntegerVector kw (SignedElements n) rs | length rs == n + 1 ->
                 (IntegerVector kw Unspecified, rs)
             _ -> typeRanges t
         r1 : r2 : rest = ranges
@@ -331,12 +331,12 @@ convertExpr scopes =
         rewriteExprLowPrec orig@(Bit expr idx) =
             if isJust maybeDims && expr == rewriteExpr expr
                 then retainSign $ Range expr mode' range'
-                else orig
+                else retainSign orig
             where
                 maybeDims = dims expr
                 retainSign = case levels expr of
-                    Just (IntegerVector _ SignedElements [_, _], []) ->
-                        MakeSigned
+                    Just (IntegerVector _ (SignedElements n) rs, [])
+                        | length rs == n + 1 -> MakeSigned
                     _ -> id
                 Just (dimInner, dimOuter) = maybeDims
                 mode' = IndexedPlus
